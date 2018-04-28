@@ -8,5 +8,180 @@
     <artifactId>bookstore</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.7.RELEASE</version>
+        <relativePath/>
+    </parent>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+
+        <dockermavenplugin.version>0.23.0</dockermavenplugin.version>
+
+        <!-- Properties for mariadb database docker container -->
+        <docker.image.mariadb>library/mariadb:10.3.6</docker.image.mariadb>
+        <docker.image.mariadb.database>bookstore</docker.image.mariadb.database>
+        <docker.image.mariadb.root.password>root</docker.image.mariadb.root.password>
+        <docker.image.mariadb.user>admin</docker.image.mariadb.user>
+        <docker.image.mariadb.password>admin</docker.image.mariadb.password>
+        <docker.image.mariadb.portmapping>3306:3306</docker.image.mariadb.portmapping>
+
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>${dockermavenplugin.version}</version>
+
+                        <configuration>
+                            <verbose>true</verbose>
+                            <images>
+                                <image>
+                                    <name>${docker.image.mariadb}</name>
+                                    <alias>local-mysql-database</alias>
+                                    <run>
+                                        <env>
+                                            <MYSQL_ROOT_PASSWORD>${docker.image.mariadb.root.password}</MYSQL_ROOT_PASSWORD>
+                                            <MYSQL_DATABASE>${docker.image.mariadb.database}</MYSQL_DATABASE>
+                                            <MYSQL_USER>${docker.image.mariadb.user}</MYSQL_USER>
+                                            <MYSQL_PASSWORD>${docker.image.mariadb.password}</MYSQL_PASSWORD>
+                                        </env>
+                                        <ports>
+                                            <port>${docker.image.mariadb.portmapping}</port>
+                                        </ports>
+                                        <wait>
+                                            <log>MySQL init process done. Ready for start up.</log>
+                                            <time>8000</time>
+                                        </wait>
+                                    </run>
+                                </image>
+                            </images>
+
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>container-start</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>container-stop</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.40</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.20</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>5.0.7</version>
+                <configuration>
+                    <driver>com.mysql.jdbc.Driver</driver>
+                    <url>jdbc:mysql://127.0.0.1:3306/bookstore</url>
+                    <user>root</user>
+                    <password>root</password>
+                    <schemas>
+                        <schema>bookstore</schema>
+                    </schemas>
+                    <table>bookstore_history</table>
+                    <locations>
+                        <location>filesystem:migrations</location>
+                    </locations>
+                    <sqlMigrationPrefix>Bookstore-</sqlMigrationPrefix>
+                    <sqlMigrationSuffixes>
+                        <sqlMigrationSuffix>.sql</sqlMigrationSuffix>
+                    </sqlMigrationSuffixes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bookstore-database-info</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>info</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>bookstore-database-migrate</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>migrate</goal>
+                            <goal>info</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.21.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 
 </project>
