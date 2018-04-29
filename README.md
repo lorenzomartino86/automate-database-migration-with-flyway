@@ -9,35 +9,27 @@ This profile will activate Fabric8 plugin that will pull and run mysql container
 
 An integration test class is added to demonstrate the schema alteration.
 
-
+In order to run build with migration you need to execute following command:
+```
 mvn clean verify -Pdocker,migration -Dflyway.url="jdbc:mysql://127.0.0.1:3306/bookstore" -Dflyway.user=root -Dflyway.password=root
+```
 
-
+If you need to set run a Flyway baseline you can a command like the following:
+```
 mvn flyway:baseline -Dflyway.url="jdbc:mysql://127.0.0.1:3306/bookstore" -Dflyway.user=root -Dflyway.password=root -Dflyway.baselineVersion=1.0.0 -Dflyway.baselineDescription='Baseline for Flyway initialization'
+```
 
+If you need to run a Flyway migration you can run a command like the following:
+```
 mvn flyway:migrate -Dflyway.url="jdbc:mysql://127.0.0.1:3306/bookstore" -Dflyway.user=root -Dflyway.password=root
-+-----------+---------+------------------------------------+----------+---------------------+----------------+
-| Category  | Version | Description                        | Type     | Installed On        | State          |
-+-----------+---------+------------------------------------+----------+---------------------+----------------+
-| Versioned | 0.1.0   | create book table                  | SQL      |                     | Below Baseline |
-| Versioned | 0.2.0   | create author table                | SQL      |                     | Below Baseline |
-| Versioned | 0.3.0   | create fk book author              | SQL      |                     | Below Baseline |
-| Versioned | 1.0.0   | Baseline for Flyway initialization | BASELINE | 2018-04-29 15:53:22 | Baseline       |
-| Versioned | 1.1.0   | create edition table               | SQL      |                     | Pending        |
-+-----------+---------+------------------------------------+----------+---------------------+----------------+
+```
 
+If you need to run a Flyway info you can run a command like the following:
+```
 mvn flyway:info -Dflyway.url="jdbc:mysql://127.0.0.1:3306/bookstore" -Dflyway.user=root -Dflyway.password=root
-+-----------+---------+------------------------------------+----------+---------------------+----------------+
-| Category  | Version | Description                        | Type     | Installed On        | State          |
-+-----------+---------+------------------------------------+----------+---------------------+----------------+
-| Versioned | 0.1.0   | create book table                  | SQL      |                     | Below Baseline |
-| Versioned | 0.2.0   | create author table                | SQL      |                     | Below Baseline |
-| Versioned | 0.3.0   | create fk book author              | SQL      |                     | Below Baseline |
-| Versioned | 1.0.0   | Baseline for Flyway initialization | BASELINE | 2018-04-29 15:53:22 | Baseline       |
-| Versioned | 1.1.0   | create edition table               | SQL      | 2018-04-29 15:53:58 | Success        |
-+-----------+---------+------------------------------------+----------+---------------------+----------------+
+```
 
-mvn flyway:undo (only in the Flyway PRO edition)
+For more details please check the post [here](https://javanger.blogspot.ie/2018/04/automate-database-migration-with-flyway.html).
 
 
 
