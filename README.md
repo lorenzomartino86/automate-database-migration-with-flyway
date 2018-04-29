@@ -16,17 +16,17 @@ mvn clean verify -Pdocker,migration -Dflyway.url="jdbc:mysql://127.0.0.1:3306/bo
 
 If you need to set run a Flyway baseline you can a command like the following:
 ```
-mvn flyway:baseline -Dflyway.url="jdbc:mysql://127.0.0.1:3306/bookstore" -Dflyway.user=root -Dflyway.password=root -Dflyway.baselineVersion=1.0.0 -Dflyway.baselineDescription='Baseline for Flyway initialization'
+mvn flyway:baseline -Pmigration -Dflyway.url="jdbc:mysql://127.0.0.1:3306/bookstore" -Dflyway.user=root -Dflyway.password=root -Dflyway.baselineVersion=1.0.0 -Dflyway.baselineDescription='Baseline for Flyway initialization'
 ```
 
 If you need to run a Flyway migration you can run a command like the following:
 ```
-mvn flyway:migrate -Dflyway.url="jdbc:mysql://127.0.0.1:3306/bookstore" -Dflyway.user=root -Dflyway.password=root
+mvn flyway:migrate -Pmigration -Dflyway.url="jdbc:mysql://127.0.0.1:3306/bookstore" -Dflyway.user=root -Dflyway.password=root
 ```
 
 If you need to run a Flyway info you can run a command like the following:
 ```
-mvn flyway:info -Dflyway.url="jdbc:mysql://127.0.0.1:3306/bookstore" -Dflyway.user=root -Dflyway.password=root
+mvn flyway:info -Pmigration -Dflyway.url="jdbc:mysql://127.0.0.1:3306/bookstore" -Dflyway.user=root -Dflyway.password=root
 ```
 
 For more details please check the post [here](https://javanger.blogspot.ie/2018/04/automate-database-migration-with-flyway.html).
