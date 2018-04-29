@@ -3,7 +3,6 @@ package com.javanger.bookstore.repository;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Data
 @Entity
@@ -20,8 +19,5 @@ public class Book {
     @OneToOne
     @JoinColumn(name="author_id")
     private Author author;
-
-
-
 
 }
